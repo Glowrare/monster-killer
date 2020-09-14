@@ -6,12 +6,29 @@ const HEAL_VALUE = 20;
 let chosenMaxLife = 100;
 let currentMonsterHealth = chosenMaxLife;
 let currentPlayerHealth = chosenMaxLife;
+let hasBonusLife = true;
 
 adjustHealthBars(chosenMaxLife);
 
+function reset() {
+  currentMonsterHealth = chosenMaxLife;
+  currentPlayerHealth = chosenMaxLife;
+  resetGame(chosenMaxLife);
+}
+
 function endRound() {
+  const initialPlayerHealth = currentPlayerHealth;
   const playerDamage = dealPlayerDamage(MONSTER_ATTACK_VALUE);
   currentPlayerHealth -= playerDamage;
+
+  if (currentPlayerHealth <= 0 && hasBonusLife) {
+    hasBonusLife = false;
+    removeBonusLife();
+    currentPlayerHealth = initialPlayerHealth;
+    setPlayerHealth(initialPlayerHealth);
+    alert("The force has smiled on you, Padawan. Bonus life saved you!");
+  }
+
   if (currentMonsterHealth <= 0 && currentPlayerHealth > 0) {
     alert("Well done, Padawan! 👍🏾 You have defeated the dark side.🤩😁");
   } else if (currentPlayerHealth <= 0 && currentMonsterHealth > 0) {
@@ -20,6 +37,10 @@ function endRound() {
     );
   } else if (currentMonsterHealth <= 0 && currentPlayerHealth <= 0) {
     alert("No winner today. We shall meet again.");
+  }
+
+  if (currentMonsterHealth <= 0 || currentPlayerHealth <= 0) {
+    reset()
   }
 }
 
@@ -48,12 +69,11 @@ function healPlayerHandler() {
   if (currentPlayerHealth >= chosenMaxLife - HEAL_VALUE) {
     alert("You can't heal to more than your Max health");
     healValue = chosenMaxLife - currentPlayerHealth;
-  }
-  else {
+  } else {
     healValue = HEAL_VALUE;
   }
   increasePlayerHealth(healValue);
-  currentPlayerHealth += healValue
+  currentPlayerHealth += healValue;
   endRound();
 }
 
